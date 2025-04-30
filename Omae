@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FGTR Football Game</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #000; }
+    #scoreboard {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 24px;
+      font-family: Arial;
+      z-index: 2;
+    }
+    #timer {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 20px;
+      font-family: Arial;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="scoreboard">Team A (Cristiano Ronaldo) 0 - 0 Team B (Neymar)</div>
+  <div id="timer">00:00</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r148/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 7.5);
+    scene.add(light);
+
+    const field = new THREE.Mesh(
+      new THREE.PlaneGeometry(60, 40),
+      new THREE.MeshStandardMaterial({ color: 0x228B22 })
+    );
+    field.rotation.x = -Math.PI / 2;
+    scene.add(field);
+
+    const ball = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
+    );
+    ball.position.set(0, 1, 0);
+    scene.add(ball);
+
+    const goalMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const goal = new THREE.Mesh(new THREE.BoxGeometry(0.5, 4, 10), goalMaterial);
+    goal.position.set(-30, 2, 0);
+    scene.add(goal);
+    const goal2 = goal.clone();
+    goal2.position.set(30, 2, 0);
+    scene.add(goal2);
+
+    camera.position.set(0, 30, 50);
+    camera.lookAt(0, 0, 0);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp") ball.position.z -= 1;
+      if (e.key === "ArrowDown") ball.position.z += 1;
+      if (e.key === "ArrowLeft") ball.position.x -= 1;
+      if (e.key === "ArrowRight") ball.position.x += 1;
+    });
+
+    let seconds = 0;
+    setInterval(() => {
+      seconds++;
+      let mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+      let secs = String(seconds % 60).padStart(2, "0");
+      document.getElementById("timer").innerText = `${mins}:${secs}`;
+    }, 1000);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
